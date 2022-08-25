@@ -1,1 +1,4 @@
 node_modules
+/service-media/public
+/api-gateway/public
+*.env
