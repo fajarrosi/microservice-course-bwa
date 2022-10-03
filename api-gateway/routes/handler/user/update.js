@@ -1,14 +1,14 @@
 const apiAdapter = require('../../apiAdapter');
 
 const {
-  URL_SERVICE_MEDIA
+  URL_SERVICE_USER
 } = process.env;
 
-const api = apiAdapter(URL_SERVICE_MEDIA);
+const api = apiAdapter(URL_SERVICE_USER);
 module.exports = async (req,res) => {
   try {
-    const media = await api.post('/media',req.body);
-    return res.json(media.data);
+    const user = await api.put(`/users/${req.user.id}`,req.body);
+    return res.json(user.data);
   } catch (error) {
     if(error.code === 'ECONNREFUSED'){
       return res.status(500).json({status:'error',message:'service unavailable'})
