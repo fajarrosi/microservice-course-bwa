@@ -5,11 +5,12 @@ const userHandler = require('./handler/user');
 const verifyToken = require('../middlewares/verifyToken');
 //register
 router.get('/',verifyToken,userHandler.list);
+router.put('/',verifyToken,userHandler.update);
 router.get('/detail',verifyToken,userHandler.detail);
 router.post('/register',userHandler.register);
+router.post('/logout',verifyToken,userHandler.logout);
 router.post('/login',userHandler.login);
 
-router.put('/update',verifyToken,userHandler.update);
 
 
 
