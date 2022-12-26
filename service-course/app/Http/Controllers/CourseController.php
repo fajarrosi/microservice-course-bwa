@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Course;
 use Illuminate\Http\Request;
+use App\Traits\Response;
+use Validator;
+use App\Mentor;
 
 class CourseController extends Controller
 {
+    use Response;
     /**
      * Display a listing of the resource.
      *
@@ -14,17 +18,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $data = Course::filterByKeyword(request('keyword'))->paginate(request('limit') ?: 15, ["*"], "page", request('page') ?: 1);
+        return $this->successResponse($data, 'List Course');
     }
 
     /**
@@ -35,7 +30,33 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'name' => 'required|string',
+            'certificate' => 'required|boolean',
+            'thumbnail' => 'required|url',
+            'type' => 'required|in:free,premium',
+            'status' => 'required|in:draft,published',
+            'level' => 'required|in:all-level,beginner,intermediate,advance',
+            'price' => 'integer',
+            'description' => 'string',
+            'mentor_id' => 'required|integer',
+            
+        ];
+        $validator = Validator::make($request->all(),$rules);
+
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors(),'Course gagal ditambahkan',400);
+        }
+
+        $mentor = Mentor::find(request('mentor_id'));
+
+        if (!$mentor) {
+            return $this->errorResponse(null,'mentor not found',404);
+        }
+
+
+        $data = Course::create($request->all());
+        return $this->successResponse($data,'Course Berhasil ditambahkan');
     }
 
     /**
@@ -44,21 +65,18 @@ class CourseController extends Controller
      * @param  \App\Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function show(Course $course)
+    public function show($id)
     {
-        //
+        $data = Course::find($id);
+
+        if (!$data) {
+            return $this->errorResponse(null,'Course not found',404);
+        }
+
+        return $this->successResponse($data,'Course Detail');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Course  $course
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Course $course)
-    {
-        //
-    }
+  
 
     /**
      * Update the specified resource in storage.
@@ -67,9 +85,40 @@ class CourseController extends Controller
      * @param  \App\Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Course $course)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'name' => 'string',
+            'certificate' => 'boolean',
+            'thumbnaiil' => 'url',
+            'type' => 'in:free,premium',
+            'status' => 'in:draft,published',
+            'level' => 'in:all-level,beginner,intermediate,advance',
+            'price' => 'integer',
+            'description' => 'string',
+            'mentor_id' => 'integer',
+            
+        ];
+        $validator = Validator::make($request->all(),$rules);
+
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors(),'Course gagal ditambahkan',400);
+        }
+        
+        $data = Course::find($id);
+
+        if (!$data) {
+            return $this->errorResponse(null,'Course not found',404);
+        }
+
+        $mentor = Mentor::find(request('mentor_id'));
+
+        if (!$mentor) {
+            return $this->errorResponse(null,'mentor not found',404);
+        }
+
+        $data->update($request->all());
+        return $this->successResponse($data,'Course Berhasil diupdate');
     }
 
     /**
@@ -80,6 +129,14 @@ class CourseController extends Controller
      */
     public function destroy(Course $course)
     {
-        //
+        $data = Course::find($id);
+
+        if (!$data) {
+            return $this->errorResponse(null,'Course not found',404);
+        }
+
+        $data->delete();
+
+        return $this->successResponse(null,'Course berhasil dihapus');
     }
 }

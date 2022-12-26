@@ -2,6 +2,14 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+// use App\Http\Controllers\MentorController;
+// use    ChapterController,
+// use    CourseController,
+// use    ImageCourseController,
+// use    LessonController,
+// use   MyCourseController,
+// use   ReviewController,
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +22,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::apiResource('mentors', MentorController::class);
+Route::apiResource('courses', CourseController::class);

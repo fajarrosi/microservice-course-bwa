@@ -25,4 +25,17 @@ class Course extends Model
     {
         return $this->hasMany('App\ImageCourse')->orderBy('id','DESC');
     }
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:m:s',
+        'updated_at' => 'datetime:Y-m-d H:m:s',
+    ];
+
+    public function scopeFilterByKeyword($query)
+    {
+        $query->where('name', 'ilike', "%" . request('keyword') . "%");
+        // $query->when(request('keyword'),function($subquery) {
+        //     return $subquery->where('name', 'ilike', "%" . request('keyword') . "%");
+        // });
+    }
 }

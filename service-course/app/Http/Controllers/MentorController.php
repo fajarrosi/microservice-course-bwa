@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Mentor;
 use Illuminate\Http\Request;
+use Validator;
+use App\Traits\Response;
 
 class MentorController extends Controller
 {
+    use Response;
     /**
      * Display a listing of the resource.
      *
@@ -14,17 +17,8 @@ class MentorController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $data = Mentor::paginate(request('limit') ?: 15, ["*"], "page", request('page') ?: 1);
+        return $this->successResponse($data, 'List Mentor');
     }
 
     /**
@@ -35,29 +29,21 @@ class MentorController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $rules = [
+            'name' => 'required|string',
+            'profile' => 'required|url',
+            'profession' => 'required|string',
+            'email' => 'required|email',
+            
+        ];
+        $validator = Validator::make($request->all(),$rules);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Mentor  $mentor
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Mentor $mentor)
-    {
-        //
-    }
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors(),'Mentor gagal ditambahkan',400);
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Mentor  $mentor
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Mentor $mentor)
-    {
-        //
+        $data = Mentor::create($request->all());
+        return $this->successResponse($data,'Mentor Berhasil ditambahkan');
     }
 
     /**
@@ -67,9 +53,40 @@ class MentorController extends Controller
      * @param  \App\Mentor  $mentor
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Mentor $mentor)
+    public function update(Request $request,$id)
     {
-        //
+        $rules = [
+            'name' => 'string',
+            'profile' => 'url',
+            'profession' => 'string',
+            'email' => 'email',
+            
+        ];
+        $validator = Validator::make($request->all(),$rules);
+
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors(),'Mentor gagal ditambahkan',400);
+        }
+        
+        $data = Mentor::find($id);
+
+        if (!$data) {
+            return $this->errorResponse(null,'Mentor not found',404);
+        }
+
+        $data->update($request->all());
+        return $this->successResponse($data,'Mentor Berhasil diupdate');
+    }
+
+    public function show($id)
+    {
+        $data = Mentor::find($id);
+
+        if (!$data) {
+            return $this->errorResponse(null,'Mentor not found',404);
+        }
+
+        return $this->successResponse($data,'Mentor Detail');
     }
 
     /**
@@ -78,8 +95,16 @@ class MentorController extends Controller
      * @param  \App\Mentor  $mentor
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Mentor $mentor)
+    public function destroy($id)
     {
-        //
+        $data = Mentor::find($id);
+
+        if (!$data) {
+            return $this->errorResponse(null,'Mentor not found',404);
+        }
+
+        $data->delete();
+
+        return $this->successResponse(null,'Mentor berhasil dihapus');
     }
 }
