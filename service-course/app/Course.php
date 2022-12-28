@@ -33,9 +33,18 @@ class Course extends Model
 
     public function scopeFilterByKeyword($query)
     {
-        $query->where('name', 'ilike', "%" . request('keyword') . "%");
-        // $query->when(request('keyword'),function($subquery) {
-        //     return $subquery->where('name', 'ilike', "%" . request('keyword') . "%");
-        // });
+        $keyword = request('keyword');
+        $query->when($keyword, function($subquery) use ($keyword)
+        {
+            return $subquery->where('name', 'like', "%" . $keyword . "%");
+        });
+    }
+    public function scopeFilterByStatus($query)
+    {
+        $status = request('status');
+        $query->when($status, function($subquery) use ($status)
+        {
+            return $subquery->where('status', $status);
+        });
     }
 }

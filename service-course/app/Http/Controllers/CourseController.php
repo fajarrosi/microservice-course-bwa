@@ -18,7 +18,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $data = Course::filterByKeyword(request('keyword'))->paginate(request('limit') ?: 15, ["*"], "page", request('page') ?: 1);
+        $data = Course::filterByKeyword()->filterByStatus()->paginate(request('limit') ?: 15, ["*"], "page", request('page') ?: 1);
         return $this->successResponse($data, 'List Course');
     }
 
@@ -127,7 +127,7 @@ class CourseController extends Controller
      * @param  \App\Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Course $course)
+    public function destroy($id)
     {
         $data = Course::find($id);
 

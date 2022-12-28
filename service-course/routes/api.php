@@ -24,3 +24,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('mentors', MentorController::class);
 Route::apiResource('courses', CourseController::class);
+Route::apiResource('chapters', ChapterController::class);
+Route::apiResource('lessons', LessonController::class);
+Route::apiResource('image-courses', ImageCourseController::class);

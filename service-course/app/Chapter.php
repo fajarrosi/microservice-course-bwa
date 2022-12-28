@@ -14,4 +14,13 @@ class Chapter extends Model
     {
         return $this->hasMany('App\Lesson')->orderBy('id','ASC');
     }
+
+    public function scopeFilterByCourse($query)
+    {
+        $courseId = request('course_id');
+        $query->when($courseId, function($subquery) use ($courseId)
+        {
+            return $subquery->where('course_id', $courseId);
+        });
+    }
 }
