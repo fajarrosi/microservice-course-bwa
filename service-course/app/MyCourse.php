@@ -14,4 +14,13 @@ class MyCourse extends Model
     {
         return $this->belongsTo('App\Course');
     }
+
+    public function scopeFilterByUser($query)
+    {
+        $userId = request('user_id');
+        $query->when($userId, function($subquery) use ($userId)
+        {
+            return $subquery->where('user_id', $userId);
+        });
+    }
 }

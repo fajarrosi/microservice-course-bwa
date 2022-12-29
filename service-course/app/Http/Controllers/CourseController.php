@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Traits\Response;
 use Validator;
 use App\Mentor;
+use App\Review;
+use App\MyCourse;
+use App\Chapter;
 
 class CourseController extends Controller
 {
@@ -67,16 +70,33 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $data = Course::find($id);
-
+        $data = Course::with(['mentor','images','chapters.lessons'])->find($id);
+        
         if (!$data) {
             return $this->errorResponse(null,'Course not found',404);
         }
 
+        $reviews = Review::where('course_id',$id)->get()->toArray();
+        if(count($reviews) > 0){
+            $userIds = array_column($reviews,'user_id');
+            $users = getUserByIds($userIds);
+            if($users['status'] === 'error'){
+                return $this->errorResponse(null,$users['message'],$users['http_code']);
+            }
+            foreach ($reviews as $key => $review) {
+                $userIndex = array_search($review['user_id'],array_column($users['data'],'id'));
+                $reviews[$key]['user'] = $users['data'][$userIndex];
+            }
+        }
+        $totalStudent = MyCourse::where('course_id',$id)->count();
+        $totalVideo = Chapter::where('course_id',$id)->withCount('lessons')->get()->toArray();
+        $finalTotalVideo = array_sum(array_column($totalVideo,'lessons_count'));
+        $data['reviews'] = $reviews;
+        $data['total_videos'] = $finalTotalVideo;
+        $data['total_student'] = $totalStudent;
+
         return $this->successResponse($data,'Course Detail');
     }
-
-  
 
     /**
      * Update the specified resource in storage.
