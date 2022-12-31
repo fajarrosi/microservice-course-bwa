@@ -1,5 +1,4 @@
 const apiAdapter = require('../../apiAdapter');
-const custompage = require('../customPage');
 
 const {
   URL_SERVICE_COURSE
@@ -8,9 +7,8 @@ const {
 const api = apiAdapter(URL_SERVICE_COURSE);
 module.exports = async (req,res) => {
   try {
-    const mentors = await api.get('/api/mentors');
-    const mentorData = custompage('mentors',mentors.data);
-    return res.json(mentorData);
+    const data = await api.post('/api/courses',req.body);
+    return res.json(data.data);
   } catch (error) {
     if(error.code === 'ECONNREFUSED'){
       return res.status(500).json({status:'error',message:'service unavailable'})
