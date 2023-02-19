@@ -19,3 +19,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('orders','OrderController@create');
+Route::get('orders','OrderController@index');
+
+Route::post('webhook','WebhookController@midtransHandler');

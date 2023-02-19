@@ -3,12 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Order;
 use App\Traits\Response;
 
 class OrderController extends Controller
 {
     use Response;
+    public function index(Request $request)
+    {
+        $userid = request('user_id');
+        $data = Order::when($userid,function ($query) use ($userid)
+        {
+            return $query->where('user_id',$userid);
+        })->paginate(request('limit') ?: 15, ["*"], "page", request('page') ?: 1);
+
+        return $this->successResponse($data, 'List Order');
+    }
     public function create(Request $request)
     {
         $user = $request->user;
@@ -18,7 +29,7 @@ class OrderController extends Controller
             'course_id' => $course['id'],
         ]);
         $transactionDetail = [
-            'order_id'=>$data->id,
+            'order_id'=>$data->id.'-'.Str::random(5),
             'gross_amount'=>$course['price'],
         ];
         $itemDetails = [
