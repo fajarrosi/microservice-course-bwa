@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Traits;
+use Illuminate\Support\Facades\Http;
 
 trait Response
 {
@@ -30,4 +31,20 @@ trait Response
         self::$response['errors'] = $data;
         return response()->json(self::$response, self::$response['meta']['code']);
     }
+
+    public function createPremiumAccess($params)
+    {
+        $url = env('SERVICE_COURSE_URL').'api/my-course/premium';
+
+        try {
+            $response = Http::post($url,$params);
+            $data = $response->json();
+            $data['http_code'] = $response->getStatusCode();
+            return $data;
+        } catch (\Throwable $th) {
+            return $this->errorResponse(null,'Service course unavailable',500);
+        }
+    }
+
+
 }

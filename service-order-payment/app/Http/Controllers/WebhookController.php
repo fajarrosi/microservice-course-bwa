@@ -66,7 +66,10 @@ class WebhookController extends Controller
         PaymentLog::create($logsData);
 
         if ($order->status === 'success') {
-            //
+            $this->createPremiumAccess([
+                'user_id' => $order->user_id,
+                'course_id' => $order->course_id,
+            ]);
         }
         return $this->successResponse(null, 'List Order');
 

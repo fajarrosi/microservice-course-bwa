@@ -28,4 +28,5 @@ Route::apiResource('chapters', ChapterController::class);
 Route::apiResource('lessons', LessonController::class);
 Route::apiResource('image-courses', ImageCourseController::class);
 Route::apiResource('my-course', MyCourseController::class);
+Route::post('my-course/premium', 'MyCourseController@createPremiumAccess');
 Route::apiResource('review', ReviewController::class);

@@ -27,9 +27,10 @@ class MyCourseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function createPremiumAccess(Request $request)
     {
-        //
+        $myCourse = MyCourse::create($request->all());
+        return $this->successResponse($myCourse,'Success');
     }
 
     /**
@@ -71,8 +72,20 @@ class MyCourseController extends Controller
             return $this->errorResponse(null,'user already taken the course',409);
         }
 
-        $data = MyCourse::create($request->all());
-        return $this->successResponse($data,'My Course Berhasil ditambahkan');
+        if ($course->type === 'premium') {
+            $order = postOrder([
+                'user' => $user['data'],
+                'course'=>$course->toArray()
+            ]);
+            // if($order['status'] === 'error'){
+            //     return $this->errorResponse(null,$order['errors'],$order['http_code']);
+            // }
+            return $this->successResponse($order,'My Course Berhasil ditambahkan');
+        }else{
+            $data = MyCourse::create($request->all());
+            return $this->successResponse($data,'My Course Berhasil ditambahkan');
+        }
+
     }
 
     /**
