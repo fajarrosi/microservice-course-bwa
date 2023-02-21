@@ -73,14 +73,17 @@ class MyCourseController extends Controller
         }
 
         if ($course->type === 'premium') {
+            if($course->price === 0){
+                return $this->errorResponse(null,'price cant be 0',405);
+            }
             $order = postOrder([
                 'user' => $user['data'],
                 'course'=>$course->toArray()
             ]);
-            // if($order['status'] === 'error'){
-            //     return $this->errorResponse(null,$order['errors'],$order['http_code']);
-            // }
-            return $this->successResponse($order,'My Course Berhasil ditambahkan');
+            if($order['meta']['status'] === 'error'){
+                return $this->errorResponse(null,$order['errors'],$order['http_code']);
+            }
+            return $this->successResponse($order['data'],'My Course Berhasil ditambahkan');
         }else{
             $data = MyCourse::create($request->all());
             return $this->successResponse($data,'My Course Berhasil ditambahkan');

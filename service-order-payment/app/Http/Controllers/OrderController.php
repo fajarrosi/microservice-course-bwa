@@ -65,7 +65,7 @@ class OrderController extends Controller
             'course_level'=> 'test'
         ];
         $data->save();
-        return $this->successResponse($data, 'List Chapter');
+        return $this->successResponse($data, 'Order berhasil');
     }
     private function getMidtransSnapurl($params){
 

@@ -53,7 +53,7 @@ use Illuminate\Support\Facades\Http;
     } catch (\Throwable $th) {
       return [
         'status' => 'error',
-        'http_code' => 200,
+        'http_code' => 500,
         'message' => 'service order payment unavailable',
       ];
     }
