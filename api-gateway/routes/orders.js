@@ -1,10 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const { APP_NAME } = process.env;
-
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send(`respons with app name => ${APP_NAME}`);
-});
+const orderHandler = require('./handler/order');
+//register
+router.get('/',orderHandler.list);
 
 module.exports = router;
