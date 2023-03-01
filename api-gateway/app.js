@@ -19,6 +19,7 @@ const webhookRouter = require('./routes/webhook');
 const orderRouter = require('./routes/orders');
 
 const verifyToken = require('./middlewares/verifyToken');
+const can = require('./middlewares/permission');
 
 const app = express();
 
@@ -32,14 +33,14 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/courses',coursesRouter);
 app.use('/chapters',chaptersRouter);
-app.use('/media',verifyToken, mediaRouter);
-app.use('/mentors', verifyToken,mentorRouter);
-app.use('/lessons', verifyToken,lessonRouter);
+app.use('/media',verifyToken,can('admin'), mediaRouter);
+app.use('/mentors', verifyToken,can('admin'),mentorRouter);
+app.use('/lessons', verifyToken,can('admin'),lessonRouter);
 app.use('/image-courses', verifyToken,imagecourseRouter);
-app.use('/my-course', verifyToken,mycourseRouter);
-app.use('/review', verifyToken,reviewRouter);
+app.use('/my-course', verifyToken,can('admin','student'),mycourseRouter);
+app.use('/review', verifyToken,can('admin'),reviewRouter);
 app.use('/refresh_token', refreshRouter);
 app.use('/webhook', webhookRouter);
-app.use('/orders', verifyToken, orderRouter);
+app.use('/orders', verifyToken,can('admin'), orderRouter);
 
 module.exports = app;
